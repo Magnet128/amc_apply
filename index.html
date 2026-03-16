@@ -1270,7 +1270,8 @@
           throw new Error((errorPayload && errorPayload.message) || "CSV를 다운로드하지 못했습니다.");
         }
 
-        const blob = new Blob([raw], { type: "text/csv;charset=utf-8;" });
+        const bom = "﻿";
+        const blob = new Blob([bom, raw], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
