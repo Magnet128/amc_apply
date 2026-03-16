@@ -54,11 +54,16 @@
 
     .topbar {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
+    }
+
+    .title-wrap {
+      flex: 1 1 560px;
+      min-width: 0;
     }
 
     .title {
@@ -67,6 +72,14 @@
       line-height: 1.12;
       letter-spacing: -0.03em;
       font-weight: 800;
+    }
+
+    .description {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+      white-space: pre-line;
     }
 
     .mode-button,
@@ -87,7 +100,7 @@
     .mode-button,
     .primary-button,
     .song-toggle {
-      min-height: 48px;
+      min-height: 46px;
       padding: 0 18px;
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
       color: #fff;
@@ -97,7 +110,7 @@
 
     .secondary-button,
     .ghost-button {
-      min-height: 48px;
+      min-height: 46px;
       padding: 0 18px;
       background: #fff;
       color: var(--text);
@@ -192,6 +205,7 @@
       color: var(--accent);
       font-size: 13px;
       font-weight: 800;
+      flex-shrink: 0;
     }
 
     .badge.closed {
@@ -202,7 +216,7 @@
     .remaining-chip {
       display: inline-flex;
       align-items: center;
-      min-height: 40px;
+      min-height: 38px;
       width: fit-content;
       padding: 0 14px;
       border-radius: 999px;
@@ -216,7 +230,7 @@
     .song-head-bottom {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 12px;
       flex-wrap: wrap;
     }
@@ -230,14 +244,14 @@
     }
 
     .song-body.open {
-      max-height: 420px;
+      max-height: 320px;
       border-top-color: var(--line);
     }
 
     .song-body-inner {
-      padding: 20px 22px 22px;
+      padding: 18px 22px 22px;
       display: grid;
-      gap: 14px;
+      gap: 12px;
     }
 
     .field {
@@ -254,7 +268,7 @@
     .text-input,
     .password-input {
       width: 100%;
-      min-height: 52px;
+      min-height: 50px;
       padding: 0 16px;
       border-radius: 16px;
       border: 1px solid var(--line);
@@ -271,51 +285,19 @@
       box-shadow: 0 0 0 4px rgba(22, 124, 90, 0.12);
     }
 
-    .gender-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .gender-option { position: relative; }
-    .gender-option input {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .gender-pill {
-      min-height: 52px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--muted);
-      transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .gender-option input:checked + .gender-pill {
-      border-color: rgba(22, 124, 90, 0.45);
-      background: var(--accent-soft);
-      color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(22, 124, 90, 0.08);
-    }
-
     .form-actions {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .form-actions .primary-button,
     .form-actions .secondary-button {
-      flex: 1 1 140px;
+      flex: 1 1 120px;
+      min-height: 44px;
+      padding: 0 14px;
+      font-size: 14px;
     }
 
     .admin-view { display: none; }
@@ -434,7 +416,7 @@
     }
 
     .skeleton {
-      min-height: 240px;
+      min-height: 220px;
       border-radius: var(--radius-xl);
       background: linear-gradient(90deg, rgba(255,255,255,0.7) 25%, rgba(241,245,244,0.98) 50%, rgba(255,255,255,0.7) 75%);
       background-size: 200% 100%;
@@ -459,29 +441,133 @@
       .app {
         width: min(100% - 16px, 1120px);
         padding-top: 14px;
+        padding-bottom: 36px;
       }
 
       .topbar {
         align-items: stretch;
+        gap: 10px;
+        margin-bottom: 14px;
       }
 
-      .mode-button,
-      .primary-button,
-      .secondary-button,
-      .ghost-button,
-      .song-toggle {
+      .title {
+        font-size: 28px;
+      }
+
+      .description {
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .mode-button {
         width: 100%;
+        min-height: 42px;
+        padding: 0 14px;
+        font-size: 14px;
+        border-radius: 14px;
       }
 
-      .song-head-bottom,
-      .form-actions,
+      .song-grid {
+        gap: 12px;
+      }
+
+      .song-head {
+        padding: 16px;
+        gap: 12px;
+      }
+
+      .song-title {
+        font-size: 20px;
+      }
+
+      .badge {
+        min-height: 28px;
+        padding: 0 10px;
+        font-size: 12px;
+      }
+
+      .remaining-chip {
+        min-height: 34px;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+
+      .song-toggle {
+        min-height: 40px;
+        padding: 0 14px;
+        font-size: 14px;
+        border-radius: 14px;
+      }
+
+      .song-body.open {
+        max-height: 260px;
+      }
+
+      .song-body-inner {
+        padding: 14px 16px 16px;
+        gap: 10px;
+      }
+
+      .label {
+        font-size: 13px;
+      }
+
+      .text-input,
+      .password-input {
+        min-height: 44px;
+        padding: 0 14px;
+        font-size: 15px;
+        border-radius: 14px;
+      }
+
+      .form-actions {
+        gap: 8px;
+      }
+
+      .form-actions .primary-button,
+      .form-actions .secondary-button {
+        min-height: 40px;
+        padding: 0 12px;
+        font-size: 13px;
+        border-radius: 13px;
+        flex: 1 1 0;
+      }
+
+      .admin-card {
+        padding: 16px;
+      }
+
+      .section-title {
+        font-size: 18px;
+        margin-bottom: 12px;
+      }
+
+      .admin-song-item,
+      .waiting-item {
+        padding: 14px;
+        border-radius: 16px;
+      }
+
+      .modal {
+        padding: 18px;
+        border-radius: 22px;
+      }
+
+      .modal-message {
+        font-size: 18px;
+      }
+
       .modal-actions {
         flex-direction: column;
         align-items: stretch;
       }
 
-      .modal {
-        padding: 20px;
+      .modal-actions .primary-button,
+      .modal-actions .secondary-button,
+      .modal-actions .ghost-button {
+        width: 100%;
+        min-height: 42px;
+        font-size: 14px;
       }
     }
   </style>
@@ -489,7 +575,12 @@
 <body>
   <main class="app">
     <header class="topbar">
-      <h1 class="title">제4회 발표회 참가 신청</h1>
+      <div class="title-wrap">
+        <h1 class="title">제4회 발표회 참가 신청</h1>
+        <p class="description">원하시는 노래를 선택하시고 이름을 정확하게 입력하신 후 신청을 눌러주세요.
+만약 신청을 변경하시려면 다른 노래를 선택 후 이름을 입력하시면 수정하실 수 있습니다.
+중복, 다중 신청은 불가능합니다.</p>
+      </div>
       <button class="mode-button" id="modeToggleButton" type="button">관리자 모드</button>
     </header>
 
@@ -673,9 +764,7 @@
 
     function resetSongForm(songId) {
       const nameInput = document.getElementById(`name-input-${songId}`);
-      const maleRadio = document.getElementById(`gender-male-${songId}`);
       if (nameInput) nameInput.value = "";
-      if (maleRadio) maleRadio.checked = true;
     }
 
     function updateModeButton() {
@@ -714,19 +803,6 @@
                 <div class="field">
                   <label class="label" for="name-input-${song.id}">이름</label>
                   <input id="name-input-${song.id}" class="text-input" type="text" placeholder="이름 입력" autocomplete="off" />
-                </div>
-                <div class="field">
-                  <div class="label">성별</div>
-                  <div class="gender-grid">
-                    <label class="gender-option">
-                      <input type="radio" name="gender-${song.id}" id="gender-male-${song.id}" value="male" checked />
-                      <span class="gender-pill">남</span>
-                    </label>
-                    <label class="gender-option">
-                      <input type="radio" name="gender-${song.id}" value="female" />
-                      <span class="gender-pill">여</span>
-                    </label>
-                  </div>
                 </div>
                 <div class="form-actions">
                   <button type="button" class="primary-button" data-submit-song="${song.id}" ${submitting ? "disabled" : ""}>${submitting ? "신청 중..." : "신청하기"}</button>
@@ -799,9 +875,7 @@
       }
 
       const nameInput = document.getElementById(`name-input-${songId}`);
-      const genderInput = document.querySelector(`input[name="gender-${songId}"]:checked`);
       const name = nameInput ? nameInput.value.trim() : "";
-      const selectedGender = genderInput ? genderInput.value : "";
 
       state.submittingSongId = songId;
       render();
@@ -810,7 +884,6 @@
         const data = await apiPost({
           action: "apply",
           name,
-          selectedGender,
           songId,
           confirmChange
         });
@@ -913,6 +986,7 @@
       console.assert(getRemainingText(preview[0]) === "잔여석 남 3 / 여 2", "잔여석 문구가 정확해야 합니다.");
       console.assert(typeof toggleMode === "function", "모드 토글 함수가 있어야 합니다.");
       console.assert(modeToggleButton.textContent === "관리자 모드", "초기 모드 버튼 문구가 맞아야 합니다.");
+      console.assert(!document.documentElement.innerHTML.includes('gender-grid'), "성별 입력 UI는 제거되어야 합니다.");
     }
 
     modalOverlay.addEventListener("click", (event) => {
