@@ -55,17 +55,15 @@
     }
 
     .topbar {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
+      position: relative;
+      display: block;
+      margin-bottom: 28px;
     }
 
     .title-wrap {
-      flex: 1 1 560px;
+      width: 100%;
       min-width: 0;
+      padding-right: 190px;
     }
 
     .title {
@@ -77,19 +75,27 @@
     }
 
     .description {
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.65;
+      margin: 16px 0 0;
+      padding: 18px 20px;
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.75;
       white-space: pre-line;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(215, 226, 220, 0.95);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
     }
 
     .toolbar-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 8px;
+      flex-wrap: nowrap;
     }
 
     .mode-button,
@@ -117,6 +123,14 @@
       color: #fff;
       box-shadow: 0 12px 24px rgba(15, 92, 66, 0.22);
       font-size: 15px;
+    }
+
+    .mode-button {
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      box-shadow: 0 8px 18px rgba(15, 92, 66, 0.18);
     }
 
     .secondary-button,
@@ -499,31 +513,45 @@
       }
 
       .topbar {
-        align-items: stretch;
-        gap: 10px;
-        margin-bottom: 14px;
+        margin-bottom: 22px;
       }
 
       .toolbar-actions {
-        width: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: auto;
       }
 
       .title {
         font-size: 28px;
       }
 
+      .title-wrap {
+        padding-right: 120px;
+      }
+
       .description {
-        font-size: 13px;
-        line-height: 1.6;
+        margin-top: 14px;
+        padding: 16px;
+        font-size: 15px;
+        line-height: 1.7;
+        border-radius: 18px;
       }
 
       .mode-button,
       .secondary-button {
-        flex: 1 1 0;
-        min-height: 42px;
-        padding: 0 14px;
-        font-size: 14px;
-        border-radius: 14px;
+        flex: 0 0 auto;
+        min-height: 36px;
+        padding: 0 10px;
+        font-size: 12px;
+        border-radius: 12px;
+      }
+
+      .secondary-button {
+        min-height: 36px;
+        padding: 0 12px;
+        font-size: 12px;
       }
 
       .song-grid {
@@ -698,16 +726,7 @@
       { id: 3, title: "3번 노래", capacity: { male: 3, female: 2 } }
     ];
 
-    const state = {
-      songs: [],
-      waitingMembers: [],
-      adminMode: false,
-      adminPassword: "",
-      openSongId: null,
-      loading: false,
-      submittingSongId: null,
-      cancellingApplicantName: "",
-      downloadingCsv: false,
+    const state = {$1downloadingCsv: false,
       formNames: {}
     };
 
@@ -882,32 +901,7 @@
         const isOpen = state.openSongId === song.id;
         const statusText = song.closed ? "마감" : "신청 가능";
         const submitting = state.submittingSongId === song.id;
-        return `
-          <article class="card song-card">
-            <div class="song-head">
-              <div class="song-head-top">
-                <h2 class="song-title">${escapeHtml(song.title)}</h2>
-                <span class="badge ${song.closed ? "closed" : ""}">${statusText}</span>
-              </div>
-              <div class="remaining-chip">${escapeHtml(getRemainingText(song))}</div>
-              <div class="song-head-bottom">
-                <button type="button" class="song-toggle" data-song-toggle="${song.id}">${isOpen ? "닫기" : "선택"}</button>
-              </div>
-            </div>
-            <div class="song-body ${isOpen ? "open" : ""}">
-              <div class="song-body-inner">
-                <div class="field">
-                  <label class="label" for="name-input-${song.id}">이름</label>
-                  <input id="name-input-${song.id}" class="text-input" type="text" placeholder="이름 입력" autocomplete="off" value="${escapeHtml(state.formNames[song.id] || "")}" />
-                </div>
-                <div class="form-actions">
-                  <button type="button" class="primary-button" data-submit-song="${song.id}" ${submitting ? "disabled" : ""}>${submitting ? "신청 중..." : "신청하기"}</button>
-                  <button type="button" class="secondary-button" data-cancel-song="${song.id}" ${submitting ? "disabled" : ""}>취소</button>
-                </div>
-              </div>
-            </div>
-          </article>
-        `;
+        return `\n          <article class="card song-card">\n            <div class="song-head">\n              <div class="song-head-top">\n                <h2 class="song-title">${escapeHtml(song.title)}</h2>\n                <span class="badge ${song.closed ? "closed" : ""}">${statusText}</span>\n              </div>\n              <div class="remaining-chip">${escapeHtml(getRemainingText(song))}</div>\n              <div class="song-head-bottom">\n                <button type="button" class="song-toggle" data-song-toggle="${song.id}">${isOpen ? "닫기" : "선택"}</button>\n              </div>\n            </div>\n            <div class="song-body ${isOpen ? "open" : ""}">\n              <div class="song-body-inner">\n                <div class="field">\n                  <label class="label" for="name-input-${song.id}">이름</label>\n                  <input id="name-input-${song.id}" class="text-input" type="text" placeholder="이름 입력" autocomplete="off" value="${escapeHtml(state.formNames[song.id] || "")}" />\n                </div>\n                <div class="form-actions">\n                  <button type="button" class="primary-button" data-submit-song="${song.id}" ${submitting ? "disabled" : ""}>${submitting ? "신청 중..." : "신청하기"}</button>\n                  <button type="button" class="secondary-button" data-cancel-song="${song.id}" ${submitting ? "disabled" : ""}>취소</button>\n                </div>\n              </div>\n            </div>\n          </article>\n        `;
       }).join("");
 
       document.querySelectorAll("[data-song-toggle]").forEach((button) => {
@@ -937,59 +931,25 @@
 
     function renderApplicantGroup(title, names) {
       if (!names.length) {
-        return `
-          <div class="part-group">
-            <div class="part-title">${escapeHtml(title)}</div>
-            <div class="empty-inline">없음</div>
-          </div>
-        `;
+        return `\n          <div class="part-group">\n            <div class="part-title">${escapeHtml(title)}</div>\n            <div class="empty-inline">없음</div>\n          </div>\n        `;
       }
 
       const chips = names.map((name) => {
         const encodedName = encodeURIComponent(name);
         const isCancelling = state.cancellingApplicantName === name;
-        return `
-          <span class="applicant-chip">
-            <span>${escapeHtml(name)}</span>
-            <button
-              type="button"
-              class="chip-cancel-button"
-              data-cancel-name="${encodedName}"
-              ${isCancelling ? "disabled" : ""}
-            >${isCancelling ? "처리중" : "취소"}</button>
-          </span>
-        `;
+        return `\n          <span class="applicant-chip">\n            <span>${escapeHtml(name)}</span>\n            <button\n              type="button"\n              class="chip-cancel-button"\n              data-cancel-name="${encodedName}"\n              ${isCancelling ? "disabled" : ""}\n            >${isCancelling ? "처리중" : "취소"}</button>\n          </span>\n        `;
       }).join("");
 
-      return `
-        <div class="part-group">
-          <div class="part-title">${escapeHtml(title)}</div>
-          <div class="applicant-chip-list">${chips}</div>
-        </div>
-      `;
+      return `\n        <div class="part-group">\n          <div class="part-title">${escapeHtml(title)}</div>\n          <div class="applicant-chip-list">${chips}</div>\n        </div>\n      `;
     }
 
     function renderAdmin() {
-      adminSongList.innerHTML = state.songs.map((song) => `
-        <div class="admin-song-item">
-          <div class="admin-song-head">
-            <h3 class="admin-song-name">${escapeHtml(song.title)}</h3>
-            <span class="remaining-chip">${escapeHtml(getRemainingText(song))}</span>
-          </div>
-          ${renderApplicantGroup("남자파트", song.applicants.male || [])}
-          ${renderApplicantGroup("여자파트", song.applicants.female || [])}
-        </div>
-      `).join("");
+      adminSongList.innerHTML = state.songs.map((song) => `\n        <div class="admin-song-item">\n          <div class="admin-song-head">\n            <h3 class="admin-song-name">${escapeHtml(song.title)}</h3>\n            <span class="remaining-chip">${escapeHtml(getRemainingText(song))}</span>\n          </div>\n          ${renderApplicantGroup("남자파트", song.applicants.male || [])}\n          ${renderApplicantGroup("여자파트", song.applicants.female || [])}\n        </div>\n      `).join("");
 
       if (!state.waitingMembers.length) {
         waitingList.innerHTML = '<div class="waiting-empty">모든 멤버가 신청을 완료했습니다.</div>';
       } else {
-        waitingList.innerHTML = state.waitingMembers.map((member) => `
-          <div class="waiting-item">
-            <span>${escapeHtml(member.name)}</span>
-            <span>${escapeHtml(member.genderLabel)}</span>
-          </div>
-        `).join("");
+        waitingList.innerHTML = state.waitingMembers.map((member) => `\n          <div class="waiting-item">\n            <span>${escapeHtml(member.name)}</span>\n            <span>${escapeHtml(member.genderLabel)}</span>\n          </div>\n        `).join("");
       }
 
       document.querySelectorAll("[data-cancel-name]").forEach((button) => {
@@ -1238,7 +1198,7 @@
       const testFormNames = { 1: "AA" };
       console.assert(testFormNames[1] === "AA", "입력한 이름은 상태에 유지되어야 합니다.");
     }
-    
+
     modalOverlay.addEventListener("click", (event) => {
       if (event.target === modalOverlay) {
         closeModal();
