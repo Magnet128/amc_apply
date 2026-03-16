@@ -689,7 +689,7 @@
 
   <script>
     const CONFIG = {
-      API_URL: "https://script.google.com/macros/s/AKfycbw9vH9YZ_1F0xWofIcqYzyIcEFgAD8vrECAphetza84I950VirdG7vECJbGaRF_JDdvAw/exec"
+      API_URL: "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE"
     };
 
     const FALLBACK_SONGS = [
@@ -707,7 +707,8 @@
       loading: false,
       submittingSongId: null,
       cancellingApplicantName: "",
-      downloadingCsv: false
+      downloadingCsv: false,
+      formNames: {}
     };
 
     const publicView = document.getElementById("publicView");
@@ -854,6 +855,7 @@
     }
 
     function resetSongForm(songId) {
+      state.formNames[songId] = "";
       const nameInput = document.getElementById(`name-input-${songId}`);
       if (nameInput) nameInput.value = "";
     }
@@ -896,7 +898,7 @@
               <div class="song-body-inner">
                 <div class="field">
                   <label class="label" for="name-input-${song.id}">이름</label>
-                  <input id="name-input-${song.id}" class="text-input" type="text" placeholder="이름 입력" autocomplete="off" />
+                  <input id="name-input-${song.id}" class="text-input" type="text" placeholder="이름 입력" autocomplete="off" value="${escapeHtml(state.formNames[song.id] || "")}" />
                 </div>
                 <div class="form-actions">
                   <button type="button" class="primary-button" data-submit-song="${song.id}" ${submitting ? "disabled" : ""}>${submitting ? "신청 중..." : "신청하기"}</button>
@@ -922,6 +924,13 @@
           resetSongForm(songId);
           state.openSongId = null;
           render();
+        });
+      });
+
+      document.querySelectorAll(".text-input[id^='name-input-']").forEach((input) => {
+        input.addEventListener("input", () => {
+          const songId = Number(input.id.replace("name-input-", ""));
+          state.formNames[songId] = input.value;
         });
       });
     }
@@ -1002,14 +1011,17 @@
       }
     }
 
-    async function submitApplication(songId, confirmChange = false) {
+    async function submitApplication(songId, confirmChange = false, preservedName = "") {
       if (!isApiConfigured()) {
         openModal("CONFIG.API_URL을 먼저 설정하세요.");
         return;
       }
 
       const nameInput = document.getElementById(`name-input-${songId}`);
-      const name = nameInput ? nameInput.value.trim() : "";
+      const liveName = nameInput ? nameInput.value.trim() : "";
+      const cachedName = (state.formNames[songId] || "").trim();
+      const name = (preservedName || liveName || cachedName).trim();
+      state.formNames[songId] = name;
 
       state.submittingSongId = songId;
       render();
@@ -1032,7 +1044,7 @@
               className: "primary-button",
               onClick: () => {
                 closeModal();
-                submitApplication(songId, true);
+                submitApplication(songId, true, name);
               }
             }
           ]);
@@ -1223,6 +1235,8 @@
       console.assert(typeof downloadCsv === "function", "CSV 다운로드 함수가 있어야 합니다.");
       console.assert(!document.documentElement.innerHTML.includes('selectedGender'), "성별 입력 UI/전송은 제거되어야 합니다.");
       console.assert(escapeHtml('<AA>') === '&lt;AA&gt;', "escapeHtml이 동작해야 합니다.");
+      state.formNames[1] = "AA";
+      console.assert(state.formNames[1] === "AA", "입력한 이름은 상태에 유지되어야 합니다.");
     }
 
     modalOverlay.addEventListener("click", (event) => {
