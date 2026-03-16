@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>제4회 발표회 참가 신청</title>
+  <style>
+    :root {
+      --bg: #f4f7f5;
+      --surface: #ffffff;
+      --surface-soft: #f8fbf9;
+      --line: #d7e2dc;
+      --text: #17211c;
+      --muted: #5d6d64;
+      --accent: #167c5a;
+      --accent-strong: #0f5c42;
+      --accent-soft: #e5f4ee;
+      --danger: #b42318;
+      --danger-soft: #fef3f2;
+      --shadow: 0 14px 38px rgba(17, 24, 39, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(22, 124, 90, 0.10), transparent 24%),
+        linear-gradient(180deg, #fbfdfc 0%, var(--bg) 100%);
+      color: var(--text);
+      font-family: Inter, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+
+    button, input { font: inherit; }
+
+    button {
+      border: 0;
+      background: none;
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1120px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 20px 0 56px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(28px, 4.5vw, 42px);
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+    }
+
+    .mode-button,
+    .primary-button,
+    .secondary-button,
+    .ghost-button,
+    .song-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 16px;
+      transition: transform 0.15s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+      white-space: nowrap;
+      font-weight: 800;
+    }
+
+    .mode-button,
+    .primary-button,
+    .song-toggle {
+      min-height: 48px;
+      padding: 0 18px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(15, 92, 66, 0.22);
+      font-size: 15px;
+    }
+
+    .secondary-button,
+    .ghost-button {
+      min-height: 48px;
+      padding: 0 18px;
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 18px rgba(17, 24, 39, 0.04);
+      font-size: 15px;
+    }
+
+    .ghost-button {
+      color: var(--muted);
+      box-shadow: none;
+    }
+
+    .mode-button:hover,
+    .primary-button:hover,
+    .secondary-button:hover,
+    .ghost-button:hover,
+    .song-toggle:hover {
+      transform: translateY(-1px);
+    }
+
+    .mode-button:disabled,
+    .primary-button:disabled,
+    .secondary-button:disabled,
+    .ghost-button:disabled,
+    .song-toggle:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .alert {
+      display: none;
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: var(--danger-soft);
+      border: 1px solid rgba(180, 35, 24, 0.12);
+      color: var(--danger);
+      line-height: 1.6;
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .alert.visible { display: block; }
+
+    .song-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      border-radius: var(--radius-xl);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(215, 226, 220, 0.95);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .song-card { overflow: hidden; }
+
+    .song-head {
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .song-head-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .song-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .badge {
+      min-height: 32px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .badge.closed {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .remaining-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 40px;
+      width: fit-content;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .song-head-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .song-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.28s ease;
+      border-top: 1px solid transparent;
+      background: rgba(248, 251, 249, 0.96);
+    }
+
+    .song-body.open {
+      max-height: 420px;
+      border-top-color: var(--line);
+    }
+
+    .song-body-inner {
+      padding: 20px 22px 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .label {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .text-input,
+    .password-input {
+      width: 100%;
+      min-height: 52px;
+      padding: 0 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+      outline: none;
+      font-size: 16px;
+      color: var(--text);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .text-input:focus,
+    .password-input:focus {
+      border-color: rgba(22, 124, 90, 0.4);
+      box-shadow: 0 0 0 4px rgba(22, 124, 90, 0.12);
+    }
+
+    .gender-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .gender-option { position: relative; }
+    .gender-option input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .gender-pill {
+      min-height: 52px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--muted);
+      transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .gender-option input:checked + .gender-pill {
+      border-color: rgba(22, 124, 90, 0.45);
+      background: var(--accent-soft);
+      color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(22, 124, 90, 0.08);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .form-actions .primary-button,
+    .form-actions .secondary-button {
+      flex: 1 1 140px;
+    }
+
+    .admin-view { display: none; }
+    .admin-view.active { display: block; }
+
+    .admin-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
+      gap: 16px;
+    }
+
+    .admin-card {
+      padding: 22px;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .admin-song-list,
+    .waiting-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .admin-song-item,
+    .waiting-item {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 16px;
+    }
+
+    .admin-song-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .admin-song-name {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .part-line {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    .part-line strong { color: var(--text); }
+
+    .waiting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .waiting-empty {
+      border-radius: 18px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 18px;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(17, 24, 39, 0.42);
+      backdrop-filter: blur(8px);
+      z-index: 30;
+    }
+
+    .modal-overlay.visible { display: flex; }
+
+    .modal {
+      width: min(440px, 100%);
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid rgba(215, 226, 220, 0.92);
+      box-shadow: 0 26px 80px rgba(17, 24, 39, 0.24);
+      padding: 22px;
+    }
+
+    .modal-message {
+      margin: 0 0 18px;
+      font-size: 20px;
+      line-height: 1.5;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .skeleton {
+      min-height: 240px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(90deg, rgba(255,255,255,0.7) 25%, rgba(241,245,244,0.98) 50%, rgba(255,255,255,0.7) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.3s infinite linear;
+      border: 1px solid rgba(215, 226, 220, 0.95);
+      box-shadow: var(--shadow);
+    }
+
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
+    }
+
+    @media (max-width: 960px) {
+      .song-grid,
+      .admin-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .app {
+        width: min(100% - 16px, 1120px);
+        padding-top: 14px;
+      }
+
+      .topbar {
+        align-items: stretch;
+      }
+
+      .mode-button,
+      .primary-button,
+      .secondary-button,
+      .ghost-button,
+      .song-toggle {
+        width: 100%;
+      }
+
+      .song-head-bottom,
+      .form-actions,
+      .modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .modal {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <h1 class="title">제4회 발표회 참가 신청</h1>
+      <button class="mode-button" id="modeToggleButton" type="button">관리자 모드</button>
+    </header>
+
+    <div class="alert" id="alertBanner"></div>
+
+    <section id="publicView">
+      <div class="song-grid" id="songGrid">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+    </section>
+
+    <section class="admin-view" id="adminView">
+      <div class="admin-layout">
+        <div class="card admin-card">
+          <h2 class="section-title">신청 현황</h2>
+          <div class="admin-song-list" id="adminSongList"></div>
+        </div>
+        <div class="card admin-card">
+          <h2 class="section-title">미신청 명단</h2>
+          <div class="waiting-list" id="waitingList"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modalBox">
+      <p class="modal-message" id="modalMessage"></p>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      API_URL: "https://script.google.com/macros/s/AKfycbw9vH9YZ_1F0xWofIcqYzyIcEFgAD8vrECAphetza84I950VirdG7vECJbGaRF_JDdvAw/exec"
+    };
+
+    const FALLBACK_SONGS = [
+      { id: 1, title: "1번 노래", capacity: { male: 3, female: 2 } },
+      { id: 2, title: "2번 노래", capacity: { male: 3, female: 2 } },
+      { id: 3, title: "3번 노래", capacity: { male: 3, female: 2 } }
+    ];
+
+    const state = {
+      songs: [],
+      waitingMembers: [],
+      adminMode: false,
+      openSongId: null,
+      loading: false,
+      submittingSongId: null
+    };
+
+    const publicView = document.getElementById("publicView");
+    const adminView = document.getElementById("adminView");
+    const songGrid = document.getElementById("songGrid");
+    const adminSongList = document.getElementById("adminSongList");
+    const waitingList = document.getElementById("waitingList");
+    const alertBanner = document.getElementById("alertBanner");
+    const modeToggleButton = document.getElementById("modeToggleButton");
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalBox = document.getElementById("modalBox");
+    const modalMessage = document.getElementById("modalMessage");
+    const modalActions = document.getElementById("modalActions");
+
+    function isApiConfigured() {
+      return Boolean(CONFIG.API_URL) && !CONFIG.API_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE");
+    }
+
+    function buildFallbackState() {
+      return FALLBACK_SONGS.map((song) => ({
+        ...song,
+        remaining: { ...song.capacity },
+        applicants: { male: [], female: [] },
+        closed: false,
+        label: `잔여석 남 ${song.capacity.male} / 여 ${song.capacity.female}`
+      }));
+    }
+
+    function setAlert(message = "") {
+      alertBanner.textContent = message;
+      alertBanner.classList.toggle("visible", Boolean(message));
+    }
+
+    function clearModalExtras() {
+      modalBox.querySelectorAll(".password-input").forEach((element) => element.remove());
+    }
+
+    function closeModal() {
+      clearModalExtras();
+      modalMessage.textContent = "";
+      modalActions.innerHTML = "";
+      modalOverlay.classList.remove("visible");
+    }
+
+    function openModal(message, actions = []) {
+      clearModalExtras();
+      modalMessage.textContent = message;
+      modalActions.innerHTML = "";
+
+      const safeActions = actions.length
+        ? actions
+        : [{ label: "확인", className: "primary-button", onClick: closeModal }];
+
+      safeActions.forEach((action) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = action.className || "primary-button";
+        button.textContent = action.label;
+        button.disabled = Boolean(action.disabled);
+        button.addEventListener("click", action.onClick);
+        modalActions.appendChild(button);
+      });
+
+      modalOverlay.classList.add("visible");
+    }
+
+    async function apiGet(action) {
+      const response = await fetch(`${CONFIG.API_URL}?action=${encodeURIComponent(action)}&ts=${Date.now()}`, {
+        method: "GET",
+        cache: "no-store"
+      });
+      const data = await response.json();
+      if (!response.ok || data.ok === false) {
+        throw new Error(data.message || "요청 처리 중 오류가 발생했습니다.");
+      }
+      return data;
+    }
+
+    async function apiPost(payload) {
+      const response = await fetch(CONFIG.API_URL, {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      if (!response.ok || data.ok === false) {
+        throw new Error(data.message || "요청 처리 중 오류가 발생했습니다.");
+      }
+      return data;
+    }
+
+    function getRemainingText(song) {
+      return `잔여석 남 ${song.remaining.male} / 여 ${song.remaining.female}`;
+    }
+
+    async function loadPublicState() {
+      if (!isApiConfigured()) {
+        state.songs = buildFallbackState();
+        setAlert("CONFIG.API_URL을 먼저 설정하세요.");
+        render();
+        return;
+      }
+
+      state.loading = true;
+      render();
+      try {
+        const data = await apiGet("state");
+        state.songs = data.state.songs;
+        if (state.adminMode) {
+          state.waitingMembers = data.state.waitingMembers || [];
+        }
+        setAlert("");
+      } catch (error) {
+        state.songs = buildFallbackState();
+        setAlert(error.message || "데이터를 불러오지 못했습니다.");
+      } finally {
+        state.loading = false;
+        render();
+      }
+    }
+
+    function toggleSong(songId) {
+      state.openSongId = state.openSongId === songId ? null : songId;
+      render();
+    }
+
+    function resetSongForm(songId) {
+      const nameInput = document.getElementById(`name-input-${songId}`);
+      const maleRadio = document.getElementById(`gender-male-${songId}`);
+      if (nameInput) nameInput.value = "";
+      if (maleRadio) maleRadio.checked = true;
+    }
+
+    function updateModeButton() {
+      modeToggleButton.textContent = state.adminMode ? "일반 모드" : "관리자 모드";
+    }
+
+    function renderSongs() {
+      if (state.loading && !state.songs.length) {
+        songGrid.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+        return;
+      }
+
+      if (!state.songs.length) {
+        songGrid.innerHTML = '<div class="card admin-card" style="grid-column:1/-1; text-align:center;">표시할 노래가 없습니다.</div>';
+        return;
+      }
+
+      songGrid.innerHTML = state.songs.map((song) => {
+        const isOpen = state.openSongId === song.id;
+        const statusText = song.closed ? "마감" : "신청 가능";
+        const submitting = state.submittingSongId === song.id;
+        return `
+          <article class="card song-card">
+            <div class="song-head">
+              <div class="song-head-top">
+                <h2 class="song-title">${song.title}</h2>
+                <span class="badge ${song.closed ? "closed" : ""}">${statusText}</span>
+              </div>
+              <div class="remaining-chip">${getRemainingText(song)}</div>
+              <div class="song-head-bottom">
+                <button type="button" class="song-toggle" data-song-toggle="${song.id}">${isOpen ? "닫기" : "선택"}</button>
+              </div>
+            </div>
+            <div class="song-body ${isOpen ? "open" : ""}">
+              <div class="song-body-inner">
+                <div class="field">
+                  <label class="label" for="name-input-${song.id}">이름</label>
+                  <input id="name-input-${song.id}" class="text-input" type="text" placeholder="이름 입력" autocomplete="off" />
+                </div>
+                <div class="field">
+                  <div class="label">성별</div>
+                  <div class="gender-grid">
+                    <label class="gender-option">
+                      <input type="radio" name="gender-${song.id}" id="gender-male-${song.id}" value="male" checked />
+                      <span class="gender-pill">남</span>
+                    </label>
+                    <label class="gender-option">
+                      <input type="radio" name="gender-${song.id}" value="female" />
+                      <span class="gender-pill">여</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="primary-button" data-submit-song="${song.id}" ${submitting ? "disabled" : ""}>${submitting ? "신청 중..." : "신청하기"}</button>
+                  <button type="button" class="secondary-button" data-cancel-song="${song.id}" ${submitting ? "disabled" : ""}>취소</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-song-toggle]").forEach((button) => {
+        button.addEventListener("click", () => toggleSong(Number(button.dataset.songToggle)));
+      });
+
+      document.querySelectorAll("[data-submit-song]").forEach((button) => {
+        button.addEventListener("click", () => submitApplication(Number(button.dataset.submitSong)));
+      });
+
+      document.querySelectorAll("[data-cancel-song]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const songId = Number(button.dataset.cancelSong);
+          resetSongForm(songId);
+          state.openSongId = null;
+          render();
+        });
+      });
+    }
+
+    function renderAdmin() {
+      adminSongList.innerHTML = state.songs.map((song) => `
+        <div class="admin-song-item">
+          <div class="admin-song-head">
+            <h3 class="admin-song-name">${song.title}</h3>
+            <span class="remaining-chip">${getRemainingText(song)}</span>
+          </div>
+          <div class="part-line"><strong>남자파트</strong> · ${song.applicants.male.length ? song.applicants.male.join(", ") : "없음"}</div>
+          <div class="part-line"><strong>여자파트</strong> · ${song.applicants.female.length ? song.applicants.female.join(", ") : "없음"}</div>
+        </div>
+      `).join("");
+
+      if (!state.waitingMembers.length) {
+        waitingList.innerHTML = '<div class="waiting-empty">모든 멤버가 신청을 완료했습니다.</div>';
+        return;
+      }
+
+      waitingList.innerHTML = state.waitingMembers.map((member) => `
+        <div class="waiting-item">
+          <span>${member.name}</span>
+          <span>${member.genderLabel}</span>
+        </div>
+      `).join("");
+    }
+
+    function render() {
+      updateModeButton();
+      publicView.style.display = state.adminMode ? "none" : "block";
+      adminView.classList.toggle("active", state.adminMode);
+      if (state.adminMode) {
+        renderAdmin();
+      } else {
+        renderSongs();
+      }
+    }
+
+    async function submitApplication(songId, confirmChange = false) {
+      if (!isApiConfigured()) {
+        openModal("CONFIG.API_URL을 먼저 설정하세요.");
+        return;
+      }
+
+      const nameInput = document.getElementById(`name-input-${songId}`);
+      const genderInput = document.querySelector(`input[name="gender-${songId}"]:checked`);
+      const name = nameInput ? nameInput.value.trim() : "";
+      const selectedGender = genderInput ? genderInput.value : "";
+
+      state.submittingSongId = songId;
+      render();
+
+      try {
+        const data = await apiPost({
+          action: "apply",
+          name,
+          selectedGender,
+          songId,
+          confirmChange
+        });
+
+        if (data.status === "change_required") {
+          state.submittingSongId = null;
+          render();
+          openModal("기존 신청을 변경하시겠습니까?", [
+            { label: "취소", className: "ghost-button", onClick: closeModal },
+            {
+              label: "확인",
+              className: "primary-button",
+              onClick: () => {
+                closeModal();
+                submitApplication(songId, true);
+              }
+            }
+          ]);
+          return;
+        }
+
+        state.songs = data.state.songs;
+        if (state.adminMode) {
+          state.waitingMembers = data.state.waitingMembers || [];
+        }
+
+        openModal("신청이 완료되었습니다.", [
+          {
+            label: "확인",
+            className: "primary-button",
+            onClick: () => {
+              closeModal();
+              resetSongForm(songId);
+              state.openSongId = null;
+              render();
+            }
+          }
+        ]);
+      } catch (error) {
+        openModal(error.message || "요청 처리 중 오류가 발생했습니다.");
+      } finally {
+        state.submittingSongId = null;
+        render();
+      }
+    }
+
+    function openAdminPasswordModal() {
+      if (!isApiConfigured()) {
+        openModal("CONFIG.API_URL을 먼저 설정하세요.");
+        return;
+      }
+
+      openModal("관리자 비밀번호를 입력하세요.", [
+        { label: "취소", className: "ghost-button", onClick: closeModal },
+        { label: "확인", className: "primary-button", onClick: validateAdminPassword }
+      ]);
+
+      const input = document.createElement("input");
+      input.type = "password";
+      input.className = "password-input";
+      input.placeholder = "비밀번호 입력";
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          validateAdminPassword();
+        }
+      });
+      modalBox.insertBefore(input, modalActions);
+      setTimeout(() => input.focus(), 20);
+    }
+
+    async function validateAdminPassword() {
+      const input = modalBox.querySelector(".password-input");
+      const password = input ? input.value : "";
+
+      try {
+        const data = await apiPost({ action: "admin-auth", password });
+        state.adminMode = true;
+        state.songs = data.state.songs;
+        state.waitingMembers = data.state.waitingMembers || [];
+        closeModal();
+        render();
+      } catch (error) {
+        openModal(error.message || "비밀번호가 올바르지 않습니다.");
+      }
+    }
+
+    async function toggleMode() {
+      if (state.adminMode) {
+        state.adminMode = false;
+        state.waitingMembers = [];
+        await loadPublicState();
+        return;
+      }
+      openAdminPasswordModal();
+    }
+
+    function runSelfTests() {
+      console.assert(FALLBACK_SONGS.every((song) => song.capacity.male === 3 && song.capacity.female === 2), "모든 곡 기본 정원은 남3/여2여야 합니다.");
+      const preview = buildFallbackState();
+      console.assert(getRemainingText(preview[0]) === "잔여석 남 3 / 여 2", "잔여석 문구가 정확해야 합니다.");
+      console.assert(typeof toggleMode === "function", "모드 토글 함수가 있어야 합니다.");
+      console.assert(modeToggleButton.textContent === "관리자 모드", "초기 모드 버튼 문구가 맞아야 합니다.");
+    }
+
+    modalOverlay.addEventListener("click", (event) => {
+      if (event.target === modalOverlay) {
+        closeModal();
+      }
+    });
+
+    modeToggleButton.addEventListener("click", toggleMode);
+
+    updateModeButton();
+    runSelfTests();
+    loadPublicState();
+  </script>
+</body>
+</html>
