@@ -10,7 +10,7 @@
   <style>
     :root {
       --bg: #f4f7f5;
-      --surface: #ffffff;
+      --surface: rgba(255,255,255,0.94);
       --surface-soft: #f8fbf9;
       --line: #d7e2dc;
       --text: #17211c;
@@ -20,7 +20,7 @@
       --accent-soft: #e5f4ee;
       --danger: #b42318;
       --danger-soft: #fef3f2;
-      --shadow: 0 14px 38px rgba(17, 24, 39, 0.08);
+      --shadow: 0 14px 38px rgba(17,24,39,0.08);
       --radius-xl: 28px;
       --radius-lg: 20px;
       --radius-md: 14px;
@@ -81,7 +81,7 @@
       font-size: 16px;
       line-height: 1.75;
       white-space: pre-line;
-      background: rgba(255, 255, 255, 0.92);
+      background: var(--surface);
       border: 1px solid rgba(215, 226, 220, 0.95);
       border-radius: 20px;
       box-shadow: var(--shadow);
@@ -114,7 +114,6 @@
       font-weight: 800;
     }
 
-    .mode-button,
     .primary-button,
     .song-toggle {
       min-height: 46px;
@@ -128,9 +127,11 @@
     .mode-button {
       min-height: 36px;
       padding: 0 12px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(15, 92, 66, 0.18);
       border-radius: 12px;
       font-size: 12px;
-      box-shadow: 0 8px 18px rgba(15, 92, 66, 0.18);
     }
 
     .secondary-button,
@@ -140,7 +141,7 @@
       background: #fff;
       color: var(--text);
       border: 1px solid var(--line);
-      box-shadow: 0 10px 18px rgba(17, 24, 39, 0.04);
+      box-shadow: 0 10px 18px rgba(17,24,39,0.04);
       font-size: 15px;
     }
 
@@ -155,7 +156,7 @@
       border-radius: 999px;
       background: var(--danger-soft);
       color: var(--danger);
-      border: 1px solid rgba(180, 35, 24, 0.14);
+      border: 1px solid rgba(180,35,24,0.14);
       font-size: 12px;
       box-shadow: none;
       flex-shrink: 0;
@@ -188,7 +189,7 @@
       padding: 14px 16px;
       border-radius: 18px;
       background: var(--danger-soft);
-      border: 1px solid rgba(180, 35, 24, 0.12);
+      border: 1px solid rgba(180,35,24,0.12);
       color: var(--danger);
       line-height: 1.6;
       font-size: 14px;
@@ -205,8 +206,8 @@
 
     .card {
       border-radius: var(--radius-xl);
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid rgba(215, 226, 220, 0.95);
+      background: var(--surface);
+      border: 1px solid rgba(215,226,220,0.95);
       box-shadow: var(--shadow);
       backdrop-filter: blur(14px);
     }
@@ -279,7 +280,7 @@
       overflow: hidden;
       transition: max-height 0.28s ease;
       border-top: 1px solid transparent;
-      background: rgba(248, 251, 249, 0.96);
+      background: rgba(248,251,249,0.96);
     }
 
     .song-body.open {
@@ -320,8 +321,8 @@
 
     .text-input:focus,
     .password-input:focus {
-      border-color: rgba(22, 124, 90, 0.4);
-      box-shadow: 0 0 0 4px rgba(22, 124, 90, 0.12);
+      border-color: rgba(22,124,90,0.4);
+      box-shadow: 0 0 0 4px rgba(22,124,90,0.12);
     }
 
     .form-actions {
@@ -451,7 +452,7 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background: rgba(17, 24, 39, 0.42);
+      background: rgba(17,24,39,0.42);
       backdrop-filter: blur(8px);
       z-index: 30;
     }
@@ -461,9 +462,9 @@
     .modal {
       width: min(440px, 100%);
       border-radius: 26px;
-      background: rgba(255, 255, 255, 0.98);
-      border: 1px solid rgba(215, 226, 220, 0.92);
-      box-shadow: 0 26px 80px rgba(17, 24, 39, 0.24);
+      background: rgba(255,255,255,0.98);
+      border: 1px solid rgba(215,226,220,0.92);
+      box-shadow: 0 26px 80px rgba(17,24,39,0.24);
       padding: 22px;
     }
 
@@ -489,7 +490,7 @@
       background: linear-gradient(90deg, rgba(255,255,255,0.7) 25%, rgba(241,245,244,0.98) 50%, rgba(255,255,255,0.7) 75%);
       background-size: 200% 100%;
       animation: shimmer 1.3s infinite linear;
-      border: 1px solid rgba(215, 226, 220, 0.95);
+      border: 1px solid rgba(215,226,220,0.95);
       box-shadow: var(--shadow);
     }
 
@@ -726,7 +727,16 @@
       { id: 3, title: "3번 노래", capacity: { male: 3, female: 2 } }
     ];
 
-    const state = {$1downloadingCsv: false,
+    const state = {
+      songs: [],
+      waitingMembers: [],
+      adminMode: false,
+      adminPassword: "",
+      openSongId: null,
+      loading: false,
+      submittingSongId: null,
+      cancellingApplicantName: "",
+      downloadingCsv: false,
       formNames: {}
     };
 
@@ -752,8 +762,40 @@
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
+        .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
+    }
+
+    function normalizeSongsFromResponse(data) {
+      const songs = data?.state?.songs || data?.songs || data?.adminState?.songs || [];
+      if (!Array.isArray(songs)) return [];
+      return songs.map((song, index) => ({
+        id: Number(song.id ?? index + 1),
+        title: String(song.title || `${index + 1}번 노래`),
+        capacity: {
+          male: Number(song.capacity?.male ?? 3),
+          female: Number(song.capacity?.female ?? 2)
+        },
+        remaining: {
+          male: Number(song.remaining?.male ?? song.capacity?.male ?? 3),
+          female: Number(song.remaining?.female ?? song.capacity?.female ?? 2)
+        },
+        applicants: {
+          male: Array.isArray(song.applicants?.male) ? song.applicants.male.slice() : [],
+          female: Array.isArray(song.applicants?.female) ? song.applicants.female.slice() : []
+        },
+        closed: Boolean(song.closed),
+        label: String(song.label || "")
+      }));
+    }
+
+    function normalizeWaitingMembersFromResponse(data) {
+      const waiting = data?.state?.waitingMembers || data?.waitingMembers || data?.adminState?.waitingMembers || [];
+      if (!Array.isArray(waiting)) return [];
+      return waiting.map((member) => ({
+        name: String(member?.name || ""),
+        genderLabel: String(member?.genderLabel || "")
+      }));
     }
 
     function buildFallbackState() {
@@ -815,7 +857,13 @@
         method: "GET",
         cache: "no-store"
       });
-      const data = await response.json();
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (error) {
+        throw new Error("응답 형식이 올바르지 않습니다.");
+      }
       if (!response.ok || data.ok === false) {
         throw new Error(data.message || "요청 처리 중 오류가 발생했습니다.");
       }
@@ -831,7 +879,13 @@
         },
         body: JSON.stringify(payload)
       });
-      const data = await response.json();
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (error) {
+        throw new Error("응답 형식이 올바르지 않습니다.");
+      }
       if (!response.ok || data.ok === false) {
         throw new Error(data.message || "요청 처리 중 오류가 발생했습니다.");
       }
@@ -839,7 +893,9 @@
     }
 
     function getRemainingText(song) {
-      return `잔여석 남 ${song.remaining.male} / 여 ${song.remaining.female}`;
+      const male = Number(song?.remaining?.male ?? 0);
+      const female = Number(song?.remaining?.female ?? 0);
+      return `잔여석 남 ${male} / 여 ${female}`;
     }
 
     async function loadPublicState() {
@@ -854,9 +910,10 @@
       render();
       try {
         const data = await apiGet("state");
-        state.songs = data.state.songs;
+        const songs = normalizeSongsFromResponse(data);
+        state.songs = songs.length ? songs : buildFallbackState();
         if (state.adminMode) {
-          state.waitingMembers = data.state.waitingMembers || [];
+          state.waitingMembers = normalizeWaitingMembersFromResponse(data);
         }
         setAlert("");
       } catch (error) {
@@ -887,21 +944,49 @@
     }
 
     function renderSongs() {
-      if (state.loading && !state.songs.length) {
+      const songs = Array.isArray(state.songs) ? state.songs : [];
+
+      if (state.loading && songs.length === 0) {
         songGrid.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
         return;
       }
 
-      if (!state.songs.length) {
+      if (songs.length === 0) {
         songGrid.innerHTML = '<div class="card admin-card" style="grid-column:1/-1; text-align:center;">표시할 노래가 없습니다.</div>';
         return;
       }
 
-      songGrid.innerHTML = state.songs.map((song) => {
+      songGrid.innerHTML = songs.map((song) => {
         const isOpen = state.openSongId === song.id;
         const statusText = song.closed ? "마감" : "신청 가능";
         const submitting = state.submittingSongId === song.id;
-        return `\n          <article class="card song-card">\n            <div class="song-head">\n              <div class="song-head-top">\n                <h2 class="song-title">${escapeHtml(song.title)}</h2>\n                <span class="badge ${song.closed ? "closed" : ""}">${statusText}</span>\n              </div>\n              <div class="remaining-chip">${escapeHtml(getRemainingText(song))}</div>\n              <div class="song-head-bottom">\n                <button type="button" class="song-toggle" data-song-toggle="${song.id}">${isOpen ? "닫기" : "선택"}</button>\n              </div>\n            </div>\n            <div class="song-body ${isOpen ? "open" : ""}">\n              <div class="song-body-inner">\n                <div class="field">\n                  <label class="label" for="name-input-${song.id}">이름</label>\n                  <input id="name-input-${song.id}" class="text-input" type="text" placeholder="이름 입력" autocomplete="off" value="${escapeHtml(state.formNames[song.id] || "")}" />\n                </div>\n                <div class="form-actions">\n                  <button type="button" class="primary-button" data-submit-song="${song.id}" ${submitting ? "disabled" : ""}>${submitting ? "신청 중..." : "신청하기"}</button>\n                  <button type="button" class="secondary-button" data-cancel-song="${song.id}" ${submitting ? "disabled" : ""}>취소</button>\n                </div>\n              </div>\n            </div>\n          </article>\n        `;
+        const cachedName = state.formNames[song.id] || "";
+        return `
+          <article class="card song-card">
+            <div class="song-head">
+              <div class="song-head-top">
+                <h2 class="song-title">${escapeHtml(song.title)}</h2>
+                <span class="badge ${song.closed ? "closed" : ""}">${statusText}</span>
+              </div>
+              <div class="remaining-chip">${escapeHtml(getRemainingText(song))}</div>
+              <div class="song-head-bottom">
+                <button type="button" class="song-toggle" data-song-toggle="${song.id}">${isOpen ? "닫기" : "선택"}</button>
+              </div>
+            </div>
+            <div class="song-body ${isOpen ? "open" : ""}">
+              <div class="song-body-inner">
+                <div class="field">
+                  <label class="label" for="name-input-${song.id}">이름</label>
+                  <input id="name-input-${song.id}" class="text-input" type="text" placeholder="이름 입력" autocomplete="off" value="${escapeHtml(cachedName)}" />
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="primary-button" data-submit-song="${song.id}" ${submitting ? "disabled" : ""}>${submitting ? "신청 중..." : "신청하기"}</button>
+                  <button type="button" class="secondary-button" data-cancel-song="${song.id}" ${submitting ? "disabled" : ""}>취소</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
       }).join("");
 
       document.querySelectorAll("[data-song-toggle]").forEach((button) => {
@@ -930,26 +1015,56 @@
     }
 
     function renderApplicantGroup(title, names) {
-      if (!names.length) {
-        return `\n          <div class="part-group">\n            <div class="part-title">${escapeHtml(title)}</div>\n            <div class="empty-inline">없음</div>\n          </div>\n        `;
+      if (!Array.isArray(names) || names.length === 0) {
+        return `
+          <div class="part-group">
+            <div class="part-title">${escapeHtml(title)}</div>
+            <div class="empty-inline">없음</div>
+          </div>
+        `;
       }
 
       const chips = names.map((name) => {
         const encodedName = encodeURIComponent(name);
         const isCancelling = state.cancellingApplicantName === name;
-        return `\n          <span class="applicant-chip">\n            <span>${escapeHtml(name)}</span>\n            <button\n              type="button"\n              class="chip-cancel-button"\n              data-cancel-name="${encodedName}"\n              ${isCancelling ? "disabled" : ""}\n            >${isCancelling ? "처리중" : "취소"}</button>\n          </span>\n        `;
+        return `
+          <span class="applicant-chip">
+            <span>${escapeHtml(name)}</span>
+            <button type="button" class="chip-cancel-button" data-cancel-name="${encodedName}" ${isCancelling ? "disabled" : ""}>${isCancelling ? "처리중" : "취소"}</button>
+          </span>
+        `;
       }).join("");
 
-      return `\n        <div class="part-group">\n          <div class="part-title">${escapeHtml(title)}</div>\n          <div class="applicant-chip-list">${chips}</div>\n        </div>\n      `;
+      return `
+        <div class="part-group">
+          <div class="part-title">${escapeHtml(title)}</div>
+          <div class="applicant-chip-list">${chips}</div>
+        </div>
+      `;
     }
 
     function renderAdmin() {
-      adminSongList.innerHTML = state.songs.map((song) => `\n        <div class="admin-song-item">\n          <div class="admin-song-head">\n            <h3 class="admin-song-name">${escapeHtml(song.title)}</h3>\n            <span class="remaining-chip">${escapeHtml(getRemainingText(song))}</span>\n          </div>\n          ${renderApplicantGroup("남자파트", song.applicants.male || [])}\n          ${renderApplicantGroup("여자파트", song.applicants.female || [])}\n        </div>\n      `).join("");
+      const songs = Array.isArray(state.songs) ? state.songs : [];
+      adminSongList.innerHTML = songs.map((song) => `
+        <div class="admin-song-item">
+          <div class="admin-song-head">
+            <h3 class="admin-song-name">${escapeHtml(song.title)}</h3>
+            <span class="remaining-chip">${escapeHtml(getRemainingText(song))}</span>
+          </div>
+          ${renderApplicantGroup("남자파트", song.applicants?.male || [])}
+          ${renderApplicantGroup("여자파트", song.applicants?.female || [])}
+        </div>
+      `).join("");
 
-      if (!state.waitingMembers.length) {
+      if (!Array.isArray(state.waitingMembers) || state.waitingMembers.length === 0) {
         waitingList.innerHTML = '<div class="waiting-empty">모든 멤버가 신청을 완료했습니다.</div>';
       } else {
-        waitingList.innerHTML = state.waitingMembers.map((member) => `\n          <div class="waiting-item">\n            <span>${escapeHtml(member.name)}</span>\n            <span>${escapeHtml(member.genderLabel)}</span>\n          </div>\n        `).join("");
+        waitingList.innerHTML = state.waitingMembers.map((member) => `
+          <div class="waiting-item">
+            <span>${escapeHtml(member.name)}</span>
+            <span>${escapeHtml(member.genderLabel)}</span>
+          </div>
+        `).join("");
       }
 
       document.querySelectorAll("[data-cancel-name]").forEach((button) => {
@@ -1011,9 +1126,9 @@
           return;
         }
 
-        state.songs = data.state.songs;
+        state.songs = normalizeSongsFromResponse(data);
         if (state.adminMode) {
-          state.waitingMembers = data.state.waitingMembers || [];
+          state.waitingMembers = normalizeWaitingMembersFromResponse(data);
         }
 
         openModal("신청이 완료되었습니다.", [
@@ -1068,8 +1183,8 @@
         const data = await apiPost({ action: "admin-auth", password });
         state.adminMode = true;
         state.adminPassword = password;
-        state.songs = data.state.songs;
-        state.waitingMembers = data.state.waitingMembers || [];
+        state.songs = normalizeSongsFromResponse(data);
+        state.waitingMembers = normalizeWaitingMembersFromResponse(data);
         closeModal();
         render();
       } catch (error) {
@@ -1106,8 +1221,8 @@
           password: state.adminPassword,
           name
         });
-        state.songs = data.state.songs;
-        state.waitingMembers = data.state.waitingMembers || [];
+        state.songs = normalizeSongsFromResponse(data);
+        state.waitingMembers = normalizeWaitingMembersFromResponse(data);
         openModal("신청이 취소되었습니다.");
       } catch (error) {
         openModal(error.message || "신청 취소 중 오류가 발생했습니다.");
@@ -1193,16 +1308,15 @@
       console.assert(typeof toggleMode === "function", "모드 토글 함수가 있어야 합니다.");
       console.assert(typeof cancelApplication === "function", "관리자 취소 함수가 있어야 합니다.");
       console.assert(typeof downloadCsv === "function", "CSV 다운로드 함수가 있어야 합니다.");
-      console.assert(!document.documentElement.innerHTML.includes('selectedGender'), "성별 입력 UI/전송은 제거되어야 합니다.");
       console.assert(escapeHtml('<AA>') === '&lt;AA&gt;', "escapeHtml이 동작해야 합니다.");
       const testFormNames = { 1: "AA" };
       console.assert(testFormNames[1] === "AA", "입력한 이름은 상태에 유지되어야 합니다.");
+      const normalized = normalizeSongsFromResponse({ songs: [{ id: 1, title: '1번 노래', remaining: { male: 3, female: 2 }, applicants: { male: [], female: [] } }] });
+      console.assert(Array.isArray(normalized) && normalized.length === 1, "응답 정규화가 동작해야 합니다.");
     }
 
     modalOverlay.addEventListener("click", (event) => {
-      if (event.target === modalOverlay) {
-        closeModal();
-      }
+      if (event.target === modalOverlay) closeModal();
     });
 
     modeToggleButton.addEventListener("click", toggleMode);
