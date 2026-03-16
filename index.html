@@ -46,6 +46,8 @@
       cursor: pointer;
     }
 
+    .hidden { display: none !important; }
+
     .app {
       width: min(1120px, calc(100% - 24px));
       margin: 0 auto;
@@ -82,11 +84,20 @@
       white-space: pre-line;
     }
 
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .mode-button,
     .primary-button,
     .secondary-button,
     .ghost-button,
-    .song-toggle {
+    .song-toggle,
+    .chip-cancel-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -124,11 +135,24 @@
       box-shadow: none;
     }
 
+    .chip-cancel-button {
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--danger-soft);
+      color: var(--danger);
+      border: 1px solid rgba(180, 35, 24, 0.14);
+      font-size: 12px;
+      box-shadow: none;
+      flex-shrink: 0;
+    }
+
     .mode-button:hover,
     .primary-button:hover,
     .secondary-button:hover,
     .ghost-button:hover,
-    .song-toggle:hover {
+    .song-toggle:hover,
+    .chip-cancel-button:hover {
       transform: translateY(-1px);
     }
 
@@ -136,7 +160,8 @@
     .primary-button:disabled,
     .secondary-button:disabled,
     .ghost-button:disabled,
-    .song-toggle:disabled {
+    .song-toggle:disabled,
+    .chip-cancel-button:disabled {
       opacity: 0.55;
       cursor: not-allowed;
       transform: none;
@@ -340,7 +365,7 @@
       justify-content: space-between;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
     }
 
     .admin-song-name {
@@ -349,14 +374,43 @@
       font-weight: 800;
     }
 
-    .part-line {
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.7;
-      word-break: keep-all;
+    .part-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
     }
 
-    .part-line strong { color: var(--text); }
+    .part-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .applicant-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .applicant-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 36px;
+      padding: 4px 6px 4px 12px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .empty-inline {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
 
     .waiting-item {
       display: flex;
@@ -450,6 +504,10 @@
         margin-bottom: 14px;
       }
 
+      .toolbar-actions {
+        width: 100%;
+      }
+
       .title {
         font-size: 28px;
       }
@@ -459,8 +517,9 @@
         line-height: 1.6;
       }
 
-      .mode-button {
-        width: 100%;
+      .mode-button,
+      .secondary-button {
+        flex: 1 1 0;
         min-height: 42px;
         padding: 0 14px;
         font-size: 14px;
@@ -548,6 +607,16 @@
         border-radius: 16px;
       }
 
+      .applicant-chip {
+        min-height: 34px;
+        padding-left: 10px;
+      }
+
+      .chip-cancel-button {
+        min-height: 26px;
+        font-size: 11px;
+      }
+
       .modal {
         padding: 18px;
         border-radius: 22px;
@@ -581,7 +650,10 @@
 만약 신청을 변경하시려면 다른 노래를 선택 후 이름을 입력하시면 수정하실 수 있습니다.
 중복, 다중 신청은 불가능합니다.</p>
       </div>
-      <button class="mode-button" id="modeToggleButton" type="button">관리자 모드</button>
+      <div class="toolbar-actions">
+        <button class="secondary-button hidden" id="downloadCsvButton" type="button">CSV 다운로드</button>
+        <button class="mode-button" id="modeToggleButton" type="button">관리자 모드</button>
+      </div>
     </header>
 
     <div class="alert" id="alertBanner"></div>
@@ -630,9 +702,12 @@
       songs: [],
       waitingMembers: [],
       adminMode: false,
+      adminPassword: "",
       openSongId: null,
       loading: false,
-      submittingSongId: null
+      submittingSongId: null,
+      cancellingApplicantName: "",
+      downloadingCsv: false
     };
 
     const publicView = document.getElementById("publicView");
@@ -642,6 +717,7 @@
     const waitingList = document.getElementById("waitingList");
     const alertBanner = document.getElementById("alertBanner");
     const modeToggleButton = document.getElementById("modeToggleButton");
+    const downloadCsvButton = document.getElementById("downloadCsvButton");
     const modalOverlay = document.getElementById("modalOverlay");
     const modalBox = document.getElementById("modalBox");
     const modalMessage = document.getElementById("modalMessage");
@@ -649,6 +725,15 @@
 
     function isApiConfigured() {
       return Boolean(CONFIG.API_URL) && !CONFIG.API_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
     function buildFallbackState() {
@@ -699,8 +784,14 @@
       modalOverlay.classList.add("visible");
     }
 
-    async function apiGet(action) {
-      const response = await fetch(`${CONFIG.API_URL}?action=${encodeURIComponent(action)}&ts=${Date.now()}`, {
+    async function apiGet(action, params = {}) {
+      const search = new URLSearchParams({ action, ts: String(Date.now()) });
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          search.set(key, String(value));
+        }
+      });
+      const response = await fetch(`${CONFIG.API_URL}?${search.toString()}`, {
         method: "GET",
         cache: "no-store"
       });
@@ -767,8 +858,11 @@
       if (nameInput) nameInput.value = "";
     }
 
-    function updateModeButton() {
+    function updateModeControls() {
       modeToggleButton.textContent = state.adminMode ? "일반 모드" : "관리자 모드";
+      downloadCsvButton.classList.toggle("hidden", !state.adminMode);
+      downloadCsvButton.disabled = state.downloadingCsv;
+      downloadCsvButton.textContent = state.downloadingCsv ? "다운로드 중..." : "CSV 다운로드";
     }
 
     function renderSongs() {
@@ -790,10 +884,10 @@
           <article class="card song-card">
             <div class="song-head">
               <div class="song-head-top">
-                <h2 class="song-title">${song.title}</h2>
+                <h2 class="song-title">${escapeHtml(song.title)}</h2>
                 <span class="badge ${song.closed ? "closed" : ""}">${statusText}</span>
               </div>
-              <div class="remaining-chip">${getRemainingText(song)}</div>
+              <div class="remaining-chip">${escapeHtml(getRemainingText(song))}</div>
               <div class="song-head-bottom">
                 <button type="button" class="song-toggle" data-song-toggle="${song.id}">${isOpen ? "닫기" : "선택"}</button>
               </div>
@@ -832,33 +926,73 @@
       });
     }
 
+    function renderApplicantGroup(title, names) {
+      if (!names.length) {
+        return `
+          <div class="part-group">
+            <div class="part-title">${escapeHtml(title)}</div>
+            <div class="empty-inline">없음</div>
+          </div>
+        `;
+      }
+
+      const chips = names.map((name) => {
+        const encodedName = encodeURIComponent(name);
+        const isCancelling = state.cancellingApplicantName === name;
+        return `
+          <span class="applicant-chip">
+            <span>${escapeHtml(name)}</span>
+            <button
+              type="button"
+              class="chip-cancel-button"
+              data-cancel-name="${encodedName}"
+              ${isCancelling ? "disabled" : ""}
+            >${isCancelling ? "처리중" : "취소"}</button>
+          </span>
+        `;
+      }).join("");
+
+      return `
+        <div class="part-group">
+          <div class="part-title">${escapeHtml(title)}</div>
+          <div class="applicant-chip-list">${chips}</div>
+        </div>
+      `;
+    }
+
     function renderAdmin() {
       adminSongList.innerHTML = state.songs.map((song) => `
         <div class="admin-song-item">
           <div class="admin-song-head">
-            <h3 class="admin-song-name">${song.title}</h3>
-            <span class="remaining-chip">${getRemainingText(song)}</span>
+            <h3 class="admin-song-name">${escapeHtml(song.title)}</h3>
+            <span class="remaining-chip">${escapeHtml(getRemainingText(song))}</span>
           </div>
-          <div class="part-line"><strong>남자파트</strong> · ${song.applicants.male.length ? song.applicants.male.join(", ") : "없음"}</div>
-          <div class="part-line"><strong>여자파트</strong> · ${song.applicants.female.length ? song.applicants.female.join(", ") : "없음"}</div>
+          ${renderApplicantGroup("남자파트", song.applicants.male || [])}
+          ${renderApplicantGroup("여자파트", song.applicants.female || [])}
         </div>
       `).join("");
 
       if (!state.waitingMembers.length) {
         waitingList.innerHTML = '<div class="waiting-empty">모든 멤버가 신청을 완료했습니다.</div>';
-        return;
+      } else {
+        waitingList.innerHTML = state.waitingMembers.map((member) => `
+          <div class="waiting-item">
+            <span>${escapeHtml(member.name)}</span>
+            <span>${escapeHtml(member.genderLabel)}</span>
+          </div>
+        `).join("");
       }
 
-      waitingList.innerHTML = state.waitingMembers.map((member) => `
-        <div class="waiting-item">
-          <span>${member.name}</span>
-          <span>${member.genderLabel}</span>
-        </div>
-      `).join("");
+      document.querySelectorAll("[data-cancel-name]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const name = decodeURIComponent(button.dataset.cancelName || "");
+          requestCancelApplication(name);
+        });
+      });
     }
 
     function render() {
-      updateModeButton();
+      updateModeControls();
       publicView.style.display = state.adminMode ? "none" : "block";
       adminView.classList.toggle("active", state.adminMode);
       if (state.adminMode) {
@@ -961,6 +1095,7 @@
       try {
         const data = await apiPost({ action: "admin-auth", password });
         state.adminMode = true;
+        state.adminPassword = password;
         state.songs = data.state.songs;
         state.waitingMembers = data.state.waitingMembers || [];
         closeModal();
@@ -970,10 +1105,109 @@
       }
     }
 
+    function requestCancelApplication(name) {
+      openModal(`${name} 신청을 취소하시겠습니까?`, [
+        { label: "닫기", className: "ghost-button", onClick: closeModal },
+        {
+          label: "취소하기",
+          className: "primary-button",
+          onClick: () => {
+            closeModal();
+            cancelApplication(name);
+          }
+        }
+      ]);
+    }
+
+    async function cancelApplication(name) {
+      if (!state.adminMode || !state.adminPassword) {
+        openModal("관리자 인증 후 사용할 수 있습니다.");
+        return;
+      }
+
+      state.cancellingApplicantName = name;
+      render();
+
+      try {
+        const data = await apiPost({
+          action: "cancel-application",
+          password: state.adminPassword,
+          name
+        });
+        state.songs = data.state.songs;
+        state.waitingMembers = data.state.waitingMembers || [];
+        openModal("신청이 취소되었습니다.");
+      } catch (error) {
+        openModal(error.message || "신청 취소 중 오류가 발생했습니다.");
+      } finally {
+        state.cancellingApplicantName = "";
+        render();
+      }
+    }
+
+    function formatDateForFilename(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hour = String(date.getHours()).padStart(2, "0");
+      const minute = String(date.getMinutes()).padStart(2, "0");
+      return `${year}${month}${day}_${hour}${minute}`;
+    }
+
+    async function downloadCsv() {
+      if (!state.adminMode || !state.adminPassword) {
+        openModal("관리자 인증 후 사용할 수 있습니다.");
+        return;
+      }
+
+      state.downloadingCsv = true;
+      render();
+
+      try {
+        const search = new URLSearchParams({
+          action: "csv",
+          password: state.adminPassword,
+          ts: String(Date.now())
+        });
+        const response = await fetch(`${CONFIG.API_URL}?${search.toString()}`, {
+          method: "GET",
+          cache: "no-store"
+        });
+        const raw = await response.text();
+        let errorPayload = null;
+        try {
+          errorPayload = JSON.parse(raw);
+        } catch (error) {
+          errorPayload = null;
+        }
+
+        if (!response.ok || (errorPayload && errorPayload.ok === false)) {
+          throw new Error((errorPayload && errorPayload.message) || "CSV를 다운로드하지 못했습니다.");
+        }
+
+        const blob = new Blob([raw], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `amc_applications_${formatDateForFilename(new Date())}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        openModal(error.message || "CSV를 다운로드하지 못했습니다.");
+      } finally {
+        state.downloadingCsv = false;
+        render();
+      }
+    }
+
     async function toggleMode() {
       if (state.adminMode) {
         state.adminMode = false;
+        state.adminPassword = "";
         state.waitingMembers = [];
+        state.cancellingApplicantName = "";
         await loadPublicState();
         return;
       }
@@ -985,8 +1219,10 @@
       const preview = buildFallbackState();
       console.assert(getRemainingText(preview[0]) === "잔여석 남 3 / 여 2", "잔여석 문구가 정확해야 합니다.");
       console.assert(typeof toggleMode === "function", "모드 토글 함수가 있어야 합니다.");
-      console.assert(modeToggleButton.textContent === "관리자 모드", "초기 모드 버튼 문구가 맞아야 합니다.");
-      console.assert(!document.documentElement.innerHTML.includes('gender-grid'), "성별 입력 UI는 제거되어야 합니다.");
+      console.assert(typeof cancelApplication === "function", "관리자 취소 함수가 있어야 합니다.");
+      console.assert(typeof downloadCsv === "function", "CSV 다운로드 함수가 있어야 합니다.");
+      console.assert(!document.documentElement.innerHTML.includes('selectedGender'), "성별 입력 UI/전송은 제거되어야 합니다.");
+      console.assert(escapeHtml('<AA>') === '&lt;AA&gt;', "escapeHtml이 동작해야 합니다.");
     }
 
     modalOverlay.addEventListener("click", (event) => {
@@ -996,8 +1232,9 @@
     });
 
     modeToggleButton.addEventListener("click", toggleMode);
+    downloadCsvButton.addEventListener("click", downloadCsv);
 
-    updateModeButton();
+    updateModeControls();
     runSelfTests();
     loadPublicState();
   </script>
