@@ -22,8 +22,6 @@
       --danger-soft: #fef3f2;
       --shadow: 0 14px 38px rgba(17,24,39,0.08);
       --radius-xl: 28px;
-      --radius-lg: 20px;
-      --radius-md: 14px;
     }
 
     * { box-sizing: border-box; }
@@ -39,13 +37,7 @@
     }
 
     button, input { font: inherit; }
-
-    button {
-      border: 0;
-      background: none;
-      cursor: pointer;
-    }
-
+    button { border: 0; background: none; cursor: pointer; }
     .hidden { display: none !important; }
 
     .app {
@@ -57,13 +49,19 @@
     .topbar {
       display: grid;
       gap: 14px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
-    .title-wrap {
+    .toolbar-actions {
       width: 100%;
-      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: nowrap;
     }
+
+    .title-wrap { width: 100%; min-width: 0; }
 
     .title {
       margin: 0;
@@ -88,13 +86,37 @@
       box-shadow: var(--shadow);
     }
 
-    .toolbar-actions {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
+    .status-panel {
+      padding: 18px 20px;
+      background: var(--surface);
+      border: 1px solid rgba(215, 226, 220, 0.95);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      display: grid;
       gap: 8px;
-      flex-wrap: nowrap;
+    }
+
+    .status-title {
+      margin: 0;
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .status-message {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .countdown-time {
+      margin: 0;
+      font-size: clamp(26px, 6vw, 40px);
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--accent-strong);
     }
 
     .mode-button,
@@ -266,6 +288,22 @@
       color: var(--text);
     }
 
+    .reference-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      color: var(--accent-strong);
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 700;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(15, 92, 66, 0.18);
+      padding-bottom: 2px;
+    }
+
+    .reference-link:hover { opacity: 0.82; }
+
     .song-head-bottom {
       display: flex;
       align-items: center;
@@ -293,10 +331,7 @@
       gap: 12px;
     }
 
-    .field {
-      display: grid;
-      gap: 8px;
-    }
+    .field { display: grid; gap: 8px; }
 
     .label {
       font-size: 14px;
@@ -348,9 +383,7 @@
       gap: 16px;
     }
 
-    .admin-card {
-      padding: 22px;
-    }
+    .admin-card { padding: 22px; }
 
     .section-title {
       margin: 0 0 16px;
@@ -360,10 +393,7 @@
     }
 
     .admin-song-list,
-    .waiting-list {
-      display: grid;
-      gap: 12px;
-    }
+    .waiting-list { display: grid; gap: 12px; }
 
     .admin-song-item,
     .waiting-item {
@@ -388,11 +418,7 @@
       font-weight: 800;
     }
 
-    .part-group {
-      display: grid;
-      gap: 8px;
-      margin-top: 10px;
-    }
+    .part-group { display: grid; gap: 8px; margin-top: 10px; }
 
     .part-title {
       font-size: 14px;
@@ -512,23 +538,11 @@
         padding-bottom: 36px;
       }
 
-      .topbar {
-        margin-bottom: 22px;
-        gap: 12px;
-      }
+      .topbar { margin-bottom: 22px; gap: 12px; }
 
-      .toolbar-actions {
-        width: 100%;
-        justify-content: flex-end;
-      }
+      .toolbar-actions { width: 100%; justify-content: flex-end; }
 
-      .title {
-        font-size: 28px;
-      }
-
-      .title-wrap {
-        width: 100%;
-      }
+      .title { font-size: 28px; }
 
       .description {
         margin-top: 14px;
@@ -537,6 +551,11 @@
         line-height: 1.7;
         border-radius: 18px;
       }
+
+      .status-panel { padding: 16px; border-radius: 18px; }
+      .status-title { font-size: 14px; }
+      .status-message { font-size: 16px; }
+      .countdown-time { font-size: 28px; }
 
       .mode-button,
       .secondary-button {
@@ -553,62 +572,19 @@
         font-size: 12px;
       }
 
-      .song-grid {
-        gap: 12px;
-      }
+      .song-grid { gap: 12px; }
+      .song-head { padding: 16px; gap: 12px; }
+      .song-title { font-size: 20px; }
 
-      .song-head {
-        padding: 16px;
-        gap: 12px;
-      }
-
-      .song-title {
-        font-size: 20px;
-      }
-
-      .badge {
-        min-height: 28px;
-        padding: 0 10px;
-        font-size: 12px;
-      }
-
-      .remaining-chip {
-        min-height: 34px;
-        padding: 0 12px;
-        font-size: 13px;
-      }
-
-      .song-toggle {
-        min-height: 40px;
-        padding: 0 14px;
-        font-size: 14px;
-        border-radius: 14px;
-      }
-
-      .song-body.open {
-        max-height: 260px;
-      }
-
-      .song-body-inner {
-        padding: 14px 16px 16px;
-        gap: 10px;
-      }
-
-      .label {
-        font-size: 13px;
-      }
-
-      .text-input,
-      .password-input {
-        min-height: 44px;
-        padding: 0 14px;
-        font-size: 15px;
-        border-radius: 14px;
-      }
-
-      .form-actions {
-        gap: 8px;
-      }
+      .badge { min-height: 28px; padding: 0 10px; font-size: 12px; }
+      .remaining-chip { min-height: 34px; padding: 0 12px; font-size: 13px; }
+      .reference-link { font-size: 13px; }
+      .song-toggle { min-height: 40px; padding: 0 14px; font-size: 14px; border-radius: 14px; }
+      .song-body.open { max-height: 260px; }
+      .song-body-inner { padding: 14px 16px 16px; gap: 10px; }
+      .label { font-size: 13px; }
+      .text-input, .password-input { min-height: 44px; padding: 0 14px; font-size: 15px; border-radius: 14px; }
+      .form-actions { gap: 8px; }
 
       .form-actions .primary-button,
       .form-actions .secondary-button {
@@ -619,45 +595,15 @@
         flex: 1 1 0;
       }
 
-      .admin-card {
-        padding: 16px;
-      }
+      .admin-card { padding: 16px; }
+      .section-title { font-size: 18px; margin-bottom: 12px; }
+      .admin-song-item, .waiting-item { padding: 14px; border-radius: 16px; }
+      .applicant-chip { min-height: 34px; padding-left: 10px; }
+      .chip-cancel-button { min-height: 26px; font-size: 11px; }
 
-      .section-title {
-        font-size: 18px;
-        margin-bottom: 12px;
-      }
-
-      .admin-song-item,
-      .waiting-item {
-        padding: 14px;
-        border-radius: 16px;
-      }
-
-      .applicant-chip {
-        min-height: 34px;
-        padding-left: 10px;
-      }
-
-      .chip-cancel-button {
-        min-height: 26px;
-        font-size: 11px;
-      }
-
-      .modal {
-        padding: 18px;
-        border-radius: 22px;
-      }
-
-      .modal-message {
-        font-size: 18px;
-      }
-
-      .modal-actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
+      .modal { padding: 18px; border-radius: 22px; }
+      .modal-message { font-size: 18px; }
+      .modal-actions { flex-direction: column; align-items: stretch; }
       .modal-actions .primary-button,
       .modal-actions .secondary-button,
       .modal-actions .ghost-button {
@@ -672,6 +618,7 @@
   <main class="app">
     <header class="topbar">
       <div class="toolbar-actions">
+        <button class="secondary-button hidden" id="toggleOpenStateButton" type="button">신청 활성화</button>
         <button class="secondary-button hidden" id="downloadCsvButton" type="button">CSV 다운로드</button>
         <button class="mode-button" id="modeToggleButton" type="button">관리자 모드</button>
       </div>
@@ -681,9 +628,15 @@
 만약 신청을 변경하시려면 다른 노래를 선택 후 이름을 입력하시면 수정하실 수 있습니다.
 중복, 다중 신청은 불가능합니다.</p>
       </div>
-      </header>
+    </header>
 
     <div class="alert" id="alertBanner"></div>
+
+    <section id="publicStatusSection" class="status-panel">
+      <p class="status-title" id="statusTitle">신청 시작 안내</p>
+      <p class="status-message" id="statusMessage">신청 상태를 확인하는 중입니다.</p>
+      <p class="countdown-time" id="countdownTime">--:--:--</p>
+    </section>
 
     <section id="publicView">
       <div class="song-grid" id="songGrid">
@@ -716,13 +669,29 @@
 
   <script>
     const CONFIG = {
-      API_URL: "https://script.google.com/macros/s/AKfycbw9vH9YZ_1F0xWofIcqYzyIcEFgAD8vrECAphetza84I950VirdG7vECJbGaRF_JDdvAw/exec"
+      API_URL: "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE",
+      FALLBACK_START_AT: "2026-03-17T19:00:00+09:00"
     };
 
     const FALLBACK_SONGS = [
-      { id: 1, title: "1번 노래", capacity: { male: 3, female: 2 } },
-      { id: 2, title: "2번 노래", capacity: { male: 3, female: 2 } },
-      { id: 3, title: "3번 노래", capacity: { male: 3, female: 2 } }
+      {
+        id: 1,
+        title: "That's Christmas to me",
+        capacity: { male: 3, female: 2 },
+        referenceUrl: "https://youtu.be/pFjdfjrtf1Q?si=-Is9drNlL0rDQ1j5"
+      },
+      {
+        id: 2,
+        title: "Sound of Silence",
+        capacity: { male: 3, female: 2 },
+        referenceUrl: "https://youtu.be/amOSaNX7KJg?si=5PmQJOkYlIMpLtM2"
+      },
+      {
+        id: 3,
+        title: "버러마이트",
+        capacity: { male: 3, female: 2 },
+        referenceUrl: "https://youtu.be/2nQn7zj9sQg?si=hAqdobpqB9yegZoB"
+      }
     ];
 
     const state = {
@@ -735,16 +704,25 @@
       submittingSongId: null,
       cancellingApplicantName: "",
       downloadingCsv: false,
-      formNames: {}
+      formNames: {},
+      applicationControl: {
+        enabled: false,
+        startAt: CONFIG.FALLBACK_START_AT
+      }
     };
 
     const publicView = document.getElementById("publicView");
     const adminView = document.getElementById("adminView");
+    const publicStatusSection = document.getElementById("publicStatusSection");
+    const statusTitle = document.getElementById("statusTitle");
+    const statusMessage = document.getElementById("statusMessage");
+    const countdownTime = document.getElementById("countdownTime");
     const songGrid = document.getElementById("songGrid");
     const adminSongList = document.getElementById("adminSongList");
     const waitingList = document.getElementById("waitingList");
     const alertBanner = document.getElementById("alertBanner");
     const modeToggleButton = document.getElementById("modeToggleButton");
+    const toggleOpenStateButton = document.getElementById("toggleOpenStateButton");
     const downloadCsvButton = document.getElementById("downloadCsvButton");
     const modalOverlay = document.getElementById("modalOverlay");
     const modalBox = document.getElementById("modalBox");
@@ -769,7 +747,7 @@
       if (!Array.isArray(songs)) return [];
       return songs.map((song, index) => ({
         id: Number(song.id ?? index + 1),
-        title: String(song.title || `${index + 1}번 노래`),
+        title: String(song.title || FALLBACK_SONGS[index]?.title || `${index + 1}번 노래`),
         capacity: {
           male: Number(song.capacity?.male ?? 3),
           female: Number(song.capacity?.female ?? 2)
@@ -783,7 +761,8 @@
           female: Array.isArray(song.applicants?.female) ? song.applicants.female.slice() : []
         },
         closed: Boolean(song.closed),
-        label: String(song.label || "")
+        label: String(song.label || ""),
+        referenceUrl: String(song.referenceUrl || FALLBACK_SONGS[index]?.referenceUrl || "")
       }));
     }
 
@@ -794,6 +773,14 @@
         name: String(member?.name || ""),
         genderLabel: String(member?.genderLabel || "")
       }));
+    }
+
+    function normalizeApplicationControlFromResponse(data) {
+      const control = data?.state?.applicationControl || data?.applicationControl || data?.adminState?.applicationControl || {};
+      return {
+        enabled: Boolean(control.enabled),
+        startAt: String(control.startAt || CONFIG.FALLBACK_START_AT)
+      };
     }
 
     function buildFallbackState() {
@@ -872,9 +859,7 @@
       const response = await fetch(CONFIG.API_URL, {
         method: "POST",
         cache: "no-store",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
       });
       const text = await response.text();
@@ -896,9 +881,51 @@
       return `잔여석 남 ${male} / 여 ${female}`;
     }
 
+    function formatDuration(ms) {
+      const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+      const seconds = String(totalSeconds % 60).padStart(2, "0");
+      return `${hours}:${minutes}:${seconds}`;
+    }
+
+    function renderCountdown() {
+      if (state.adminMode) {
+        publicStatusSection.classList.add("hidden");
+        return;
+      }
+
+      publicStatusSection.classList.remove("hidden");
+      const control = state.applicationControl || { enabled: false, startAt: CONFIG.FALLBACK_START_AT };
+      const startAt = new Date(control.startAt);
+      const hasValidStart = !Number.isNaN(startAt.getTime());
+      const now = new Date();
+
+      if (control.enabled) {
+        statusTitle.textContent = "신청 상태";
+        statusMessage.textContent = "현재 신청 가능합니다.";
+        countdownTime.textContent = hasValidStart && now < startAt
+          ? formatDuration(startAt.getTime() - now.getTime())
+          : "OPEN";
+        return;
+      }
+
+      if (hasValidStart && now < startAt) {
+        statusTitle.textContent = "신청 오픈까지 남은 시간";
+        statusMessage.textContent = "아직 신청 시간이 아닙니다.";
+        countdownTime.textContent = formatDuration(startAt.getTime() - now.getTime());
+        return;
+      }
+
+      statusTitle.textContent = "신청 상태";
+      statusMessage.textContent = "현재 신청이 비활성화되어 있습니다.";
+      countdownTime.textContent = hasValidStart ? "00:00:00" : "--:--:--";
+    }
+
     async function loadPublicState() {
       if (!isApiConfigured()) {
         state.songs = buildFallbackState();
+        state.applicationControl = { enabled: false, startAt: CONFIG.FALLBACK_START_AT };
         setAlert("CONFIG.API_URL을 먼저 설정하세요.");
         render();
         return;
@@ -910,12 +937,14 @@
         const data = await apiGet("state");
         const songs = normalizeSongsFromResponse(data);
         state.songs = songs.length ? songs : buildFallbackState();
+        state.applicationControl = normalizeApplicationControlFromResponse(data);
         if (state.adminMode) {
           state.waitingMembers = normalizeWaitingMembersFromResponse(data);
         }
         setAlert("");
       } catch (error) {
         state.songs = buildFallbackState();
+        state.applicationControl = { enabled: false, startAt: CONFIG.FALLBACK_START_AT };
         setAlert(error.message || "데이터를 불러오지 못했습니다.");
       } finally {
         state.loading = false;
@@ -937,8 +966,11 @@
     function updateModeControls() {
       modeToggleButton.textContent = state.adminMode ? "일반 모드" : "관리자 모드";
       downloadCsvButton.classList.toggle("hidden", !state.adminMode);
+      toggleOpenStateButton.classList.toggle("hidden", !state.adminMode);
       downloadCsvButton.disabled = state.downloadingCsv;
       downloadCsvButton.textContent = state.downloadingCsv ? "다운로드 중..." : "CSV 다운로드";
+      toggleOpenStateButton.textContent = state.applicationControl.enabled ? "신청 비활성화" : "신청 활성화";
+      toggleOpenStateButton.disabled = !state.adminMode;
     }
 
     function renderSongs() {
@@ -967,6 +999,7 @@
                 <span class="badge ${song.closed ? "closed" : ""}">${statusText}</span>
               </div>
               <div class="remaining-chip">${escapeHtml(getRemainingText(song))}</div>
+              ${song.referenceUrl ? `<a class="reference-link" href="${escapeHtml(song.referenceUrl)}" target="_blank" rel="noopener noreferrer">참고영상 보기</a>` : ""}
               <div class="song-head-bottom">
                 <button type="button" class="song-toggle" data-song-toggle="${song.id}">${isOpen ? "닫기" : "선택"}</button>
               </div>
@@ -1075,6 +1108,7 @@
 
     function render() {
       updateModeControls();
+      renderCountdown();
       publicView.style.display = state.adminMode ? "none" : "block";
       adminView.classList.toggle("active", state.adminMode);
       if (state.adminMode) {
@@ -1100,12 +1134,7 @@
       render();
 
       try {
-        const data = await apiPost({
-          action: "apply",
-          name,
-          songId,
-          confirmChange
-        });
+        const data = await apiPost({ action: "apply", name, songId, confirmChange });
 
         if (data.status === "change_required") {
           state.submittingSongId = null;
@@ -1125,6 +1154,7 @@
         }
 
         state.songs = normalizeSongsFromResponse(data);
+        state.applicationControl = normalizeApplicationControlFromResponse(data);
         if (state.adminMode) {
           state.waitingMembers = normalizeWaitingMembersFromResponse(data);
         }
@@ -1165,9 +1195,7 @@
       input.className = "password-input";
       input.placeholder = "비밀번호 입력";
       input.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-          validateAdminPassword();
-        }
+        if (event.key === "Enter") validateAdminPassword();
       });
       modalBox.insertBefore(input, modalActions);
       setTimeout(() => input.focus(), 20);
@@ -1183,6 +1211,7 @@
         state.adminPassword = password;
         state.songs = normalizeSongsFromResponse(data);
         state.waitingMembers = normalizeWaitingMembersFromResponse(data);
+        state.applicationControl = normalizeApplicationControlFromResponse(data);
         closeModal();
         render();
       } catch (error) {
@@ -1214,18 +1243,53 @@
       render();
 
       try {
-        const data = await apiPost({
-          action: "cancel-application",
-          password: state.adminPassword,
-          name
-        });
+        const data = await apiPost({ action: "cancel-application", password: state.adminPassword, name });
         state.songs = normalizeSongsFromResponse(data);
         state.waitingMembers = normalizeWaitingMembersFromResponse(data);
+        state.applicationControl = normalizeApplicationControlFromResponse(data);
         openModal("신청이 취소되었습니다.");
       } catch (error) {
         openModal(error.message || "신청 취소 중 오류가 발생했습니다.");
       } finally {
         state.cancellingApplicantName = "";
+        render();
+      }
+    }
+
+    function requestToggleOpenState() {
+      const nextEnabled = !state.applicationControl.enabled;
+      openModal(nextEnabled ? "신청을 활성화하시겠습니까?" : "신청을 비활성화하시겠습니까?", [
+        { label: "닫기", className: "ghost-button", onClick: closeModal },
+        {
+          label: nextEnabled ? "활성화" : "비활성화",
+          className: "primary-button",
+          onClick: () => {
+            closeModal();
+            setOpenState(nextEnabled);
+          }
+        }
+      ]);
+    }
+
+    async function setOpenState(enabled) {
+      if (!state.adminMode || !state.adminPassword) {
+        openModal("관리자 인증 후 사용할 수 있습니다.");
+        return;
+      }
+
+      try {
+        const data = await apiPost({
+          action: "set-open-state",
+          password: state.adminPassword,
+          enabled
+        });
+        state.songs = normalizeSongsFromResponse(data);
+        state.waitingMembers = normalizeWaitingMembersFromResponse(data);
+        state.applicationControl = normalizeApplicationControlFromResponse(data);
+        openModal(enabled ? "신청이 활성화되었습니다." : "신청이 비활성화되었습니다.");
+      } catch (error) {
+        openModal(error.message || "신청 상태 변경 중 오류가 발생했습니다.");
+      } finally {
         render();
       }
     }
@@ -1270,7 +1334,7 @@
           throw new Error((errorPayload && errorPayload.message) || "CSV를 다운로드하지 못했습니다.");
         }
 
-        const bom = "﻿";
+        const bom = "\uFEFF";
         const blob = new Blob([bom, raw], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -1301,17 +1365,22 @@
     }
 
     function runSelfTests() {
-      console.assert(FALLBACK_SONGS.every((song) => song.capacity.male === 3 && song.capacity.female === 2), "모든 곡 기본 정원은 남3/여2여야 합니다.");
-      const preview = buildFallbackState();
-      console.assert(getRemainingText(preview[0]) === "잔여석 남 3 / 여 2", "잔여석 문구가 정확해야 합니다.");
+      console.assert(FALLBACK_SONGS.length === 3, "노래 3개가 있어야 합니다.");
+      console.assert(FALLBACK_SONGS[0].title === "That's Christmas to me", "1번 곡 제목이 반영되어야 합니다.");
+      console.assert(FALLBACK_SONGS[1].referenceUrl.includes("youtu.be"), "참고영상 링크가 있어야 합니다.");
+      console.assert(getRemainingText({ remaining: { male: 3, female: 2 } }) === "잔여석 남 3 / 여 2", "잔여석 문구가 정확해야 합니다.");
       console.assert(typeof toggleMode === "function", "모드 토글 함수가 있어야 합니다.");
       console.assert(typeof cancelApplication === "function", "관리자 취소 함수가 있어야 합니다.");
       console.assert(typeof downloadCsv === "function", "CSV 다운로드 함수가 있어야 합니다.");
+      console.assert(typeof setOpenState === "function", "신청 활성화/비활성화 함수가 있어야 합니다.");
       console.assert(escapeHtml('<AA>') === '&lt;AA&gt;', "escapeHtml이 동작해야 합니다.");
-      const testFormNames = { 1: "AA" };
-      console.assert(testFormNames[1] === "AA", "입력한 이름은 상태에 유지되어야 합니다.");
-      const normalized = normalizeSongsFromResponse({ songs: [{ id: 1, title: '1번 노래', remaining: { male: 3, female: 2 }, applicants: { male: [], female: [] } }] });
+      const normalized = normalizeSongsFromResponse({
+        songs: [{ id: 1, title: "That's Christmas to me", remaining: { male: 3, female: 2 }, applicants: { male: [], female: [] }, referenceUrl: "https://youtu.be/pFjdfjrtf1Q?si=-Is9drNlL0rDQ1j5" }]
+      });
       console.assert(Array.isArray(normalized) && normalized.length === 1, "응답 정규화가 동작해야 합니다.");
+      console.assert(normalized[0].referenceUrl.includes("youtu.be"), "참고영상 링크가 정규화되어야 합니다.");
+      const control = normalizeApplicationControlFromResponse({ state: { applicationControl: { enabled: true, startAt: CONFIG.FALLBACK_START_AT } } });
+      console.assert(control.enabled === true, "신청 상태 정규화가 동작해야 합니다.");
     }
 
     modalOverlay.addEventListener("click", (event) => {
@@ -1320,10 +1389,13 @@
 
     modeToggleButton.addEventListener("click", toggleMode);
     downloadCsvButton.addEventListener("click", downloadCsv);
+    toggleOpenStateButton.addEventListener("click", requestToggleOpenState);
 
     updateModeControls();
     runSelfTests();
+    renderCountdown();
     loadPublicState();
+    setInterval(renderCountdown, 1000);
   </script>
 </body>
 </html>
